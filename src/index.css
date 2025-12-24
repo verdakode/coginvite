@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.neuron-background {
+  background-image: url('/neurons.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.clickable-neuron {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clickable-neuron:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.modal-overlay {
+  background-color: rgba(10, 10, 10, 0.9);
+  backdrop-filter: blur(8px);
+}
