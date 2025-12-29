@@ -1,14 +1,1436 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meta Cognition</title>
-    <script type="module" crossorigin src="/coginvite/assets/index-CynVkLUr.js"></script>
-    <link rel="stylesheet" crossorigin href="/coginvite/assets/index-DGHxHICu.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cognition</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&family=Inter:wght@300;400;500&family=Orbitron:wght@400;500;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --void: #040608;
+      --deep: #060a0c;
+      --bg: #0a1014;
+      --surface: #0d1418;
+      --border: #1a2428;
+      --dim: #2a4045;
+      --muted: #3d5a60;
+      --subtle: #5a8a8f;
+      --text: #8ec8c8;
+      --bright: #b8e8e8;
+      --glow: #4fd1c5;
+      --glow-bright: #00ffd0;
+      --accent: #81e6d9;
+      --blue: #4dabff;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--void);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Canvas */
+
+    #sky {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Scroll container */
+
+    .scroll-space {
+      height: 800vh;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Header */
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(4,6,8,0.9) 0%, transparent 100%);
+    }
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--bright);
+      letter-spacing: 0.15em;
+    }
+
+    .nav {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav a {
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      font-family: 'JetBrains Mono', monospace;
+      transition: color 0.3s;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+    }
+
+    /* Progress bar - LEFT SIDE */
+
+    .progress {
+      position: fixed;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-track {
+      width: 2px;
+      height: 150px;
+      background: var(--border);
+      border-radius: 1px;
+      position: relative;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--glow);
+      border-radius: 1px;
+      box-shadow: 0 0 10px var(--glow);
+      transition: height 0.1s;
+    }
+
+    .progress-label {
+      font-size: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 0.15em;
+      transform: rotate(180deg);
+    }
+
+    /* Text panels - SIDES ONLY */
+
+    .text-panel {
+      position: fixed;
+      z-index: 50;
+      max-width: 400px;
+      opacity: 0;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      pointer-events: none;
+    }
+
+    .text-panel.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .text-panel.left {
+      left: 60px;
+      transform: translateX(-20px);
+    }
+
+    .text-panel.left.visible {
+      transform: translateX(0);
+    }
+
+    .text-panel.right {
+      right: 60px;
+      transform: translateX(20px);
+    }
+
+    .text-panel.right.visible {
+      transform: translateX(0);
+    }
+
+    .text-panel h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 400;
+      color: var(--bright);
+      line-height: 1.3;
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .text-panel h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 400;
+      color: var(--glow-bright);
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .text-panel p {
+      font-size: 14px;
+      color: var(--subtle);
+      line-height: 1.7;
+    }
+
+    .text-panel .label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      letter-spacing: 0.2em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    /* Product detail panel */
+
+    .detail-panel {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 500px;
+      background: rgba(6, 10, 12, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(20px);
+    }
+
+    .detail-panel.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .detail-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 20px;
+      transition: color 0.2s;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+    }
+
+    .detail-close:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+
+    .detail-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      color: var(--bright);
+      margin-bottom: 4px;
+    }
+
+    .detail-type {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--glow);
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .detail-desc {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .detail-section {
+      margin-bottom: 20px;
+    }
+
+    .detail-section-title {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .detail-list {
+      list-style: none;
+    }
+
+    .detail-list li {
+      font-size: 13px;
+      color: var(--subtle);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .detail-list li:last-child {
+      border-bottom: none;
+    }
+
+    .detail-list li::before {
+      content: '→';
+      color: var(--glow);
+      font-size: 11px;
+    }
+
+    .detail-code {
+      background: var(--void);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      overflow-x: auto;
+    }
+
+    .detail-code .hl { color: var(--glow); }
+
+    .detail-code .str { color: var(--accent); }
+
+    .detail-code .dim { color: var(--dim); }
+
+    .detail-status {
+      display: inline-block;
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-left: 12px;
+      vertical-align: middle;
+    }
+
+    .status-live {
+      background: rgba(79, 209, 197, 0.15);
+      color: var(--glow);
+    }
+
+    .status-beta {
+      background: rgba(129, 140, 248, 0.15);
+      color: #a5b4fc;
+    }
+
+    .status-internal {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fcd34d;
+    }
+
+    /* Node labels (floating near nodes) */
+
+    .node-label {
+      position: fixed;
+      z-index: 60;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .node-label.visible {
+      opacity: 1;
+    }
+
+    .node-label-name {
+      font-size: 12px;
+      color: var(--bright);
+      margin-bottom: 2px;
+    }
+
+    .node-label-type {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* Scroll hint */
+
+    .scroll-hint {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      letter-spacing: 0.2em;
+      z-index: 50;
+      transition: opacity 1s;
+    }
+
+    .scroll-hint.hidden {
+      opacity: 0;
+    }
+
+    /* Bottom sections container */
+
+    .bottom-content {
+      position: relative;
+      z-index: 100;
+      background: linear-gradient(to bottom, transparent 0%, var(--void) 100px, var(--void) 100%);
+      padding-top: 150px;
+    }
+
+    .section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 32px;
+    }
+
+    /* Manifesto */
+
+    .manifesto {
+      background: rgba(10, 20, 30, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .manifesto::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--glow), transparent);
+    }
+
+    .manifesto h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(20px, 3vw, 28px);
+      color: var(--glow-bright);
+      margin-bottom: 32px;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .manifesto p {
+      font-size: 15px;
+      line-height: 2;
+      color: var(--text);
+      text-align: justify;
+    }
+
+    .manifesto p + p {
+      margin-top: 24px;
+    }
+
+    .manifesto .highlight {
+      color: var(--glow-bright);
+      font-weight: 500;
+    }
+
+    .manifesto .blue {
+      color: var(--blue);
+    }
+
+    /* Event section */
+
+    .event-section {
+      background: rgba(10, 20, 30, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+
+    .event-header {
+      background: linear-gradient(90deg, rgba(0, 255, 208, 0.1) 0%, rgba(77, 171, 255, 0.1) 100%);
+      padding: 40px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .event-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(24px, 4vw, 36px);
+      color: var(--glow-bright);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .event-header p {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      color: var(--blue);
+      letter-spacing: 0.3em;
+    }
+
+    .event-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 768px) {
+      .event-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .event-details {
+      padding: 40px;
+      border-right: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .event-details {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    .event-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .event-meta-item {
+      background: rgba(0, 20, 40, 0.5);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .event-meta-label {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--glow);
+      letter-spacing: 0.15em;
+      margin-bottom: 8px;
+    }
+
+    .event-meta-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: var(--bright);
+    }
+
+    .event-meta-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .event-desc {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--subtle);
+    }
+
+    .event-rsvp {
+      padding: 40px;
+    }
+
+    .rsvp-title {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--blue);
+      letter-spacing: 0.15em;
+      margin-bottom: 20px;
+    }
+
+    .attendees {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .attendee {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--void);
+      transition: transform 0.2s;
+      cursor: default;
+    }
+
+    .attendee:hover {
+      transform: scale(1.1);
+    }
+
+    .attendee-add {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px dashed var(--dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dim);
+      font-size: 20px;
+    }
+
+    /* Forms */
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--glow);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(0, 10, 20, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--bright);
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus {
+      border-color: var(--glow);
+    }
+
+    .form-input::-moz-placeholder {
+      color: var(--dim);
+    }
+
+    .form-input::placeholder {
+      color: var(--dim);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--glow-bright) 0%, var(--blue) 100%);
+      border: none;
+      border-radius: 50px;
+      color: var(--void);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0, 255, 208, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(0, 255, 208, 0.3);
+    }
+
+    /* Newsletter section */
+
+    .newsletter {
+      text-align: center;
+      padding: 80px 32px;
+    }
+
+    .newsletter h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(18px, 2.5vw, 24px);
+      color: var(--blue);
+      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+    }
+
+    .newsletter p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      letter-spacing: 0.1em;
+    }
+
+    .newsletter-form {
+      display: flex;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 500px) {
+      .newsletter-form {
+        flex-direction: column;
+      }
+    }
+
+    .newsletter-form .form-input {
+      flex: 1;
+    }
+
+    .newsletter-form .btn-primary {
+      width: auto;
+      white-space: nowrap;
+    }
+
+    /* Footer */
+
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer p {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      letter-spacing: 0.15em;
+    }
+
+    /* Success state */
+
+    .success-message {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .success-message h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      color: var(--glow-bright);
+      margin-bottom: 8px;
+    }
+
+    .success-message p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Overlay for panel */
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 250;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sky"></canvas>
+
+  <div class="scroll-space"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">COGNITION</div>
+    <nav class="nav">
+      <a href="#manifesto">manifesto</a>
+      <a href="#event">event</a>
+      <a href="https://devin.ai" target="_blank">devin ↗</a>
+    </nav>
+  </header>
+
+  <!-- Progress -->
+  <div class="progress">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label">SCROLL</div>
+  </div>
+
+  <!-- Text panels (sides only) -->
+  <div class="text-panel left" id="panel-intro" style="top: 30%;">
+    <div class="label">// the thesis</div>
+    <h1>Software that understands what it's doing</h1>
+    <p>We're building systems that reason about code, maintain context across tasks, and develop persistent understanding of the systems they work in.</p>
+  </div>
+
+  <div class="text-panel right" id="panel-ladder" style="top: 35%;">
+    <div class="label">// the product ladder</div>
+    <h2>Five layers of cognition</h2>
+    <p>Each product addresses a different relationship between human intent and machine execution. Click the nodes to explore.</p>
+  </div>
+
+  <div class="text-panel left" id="panel-thesis" style="top: 40%;">
+    <div class="label">// where this leads</div>
+    <h2>Metacognition</h2>
+    <p>Not tools that help you think. Software that thinks about itself thinking. Systems that model their own understanding and know when to defer.</p>
+  </div>
+
+  <!-- Node labels -->
+  <div class="node-label" id="label-devin">
+    <div class="node-label-name">Devin</div>
+    <div class="node-label-type">labor abstraction</div>
+  </div>
+  <div class="node-label" id="label-ask">
+    <div class="node-label-name">Ask Devin</div>
+    <div class="node-label-type">focused reasoning</div>
+  </div>
+  <div class="node-label" id="label-wiki">
+    <div class="node-label-name">DeepWiki</div>
+    <div class="node-label-type">externalized understanding</div>
+  </div>
+  <div class="node-label" id="label-windsurf">
+    <div class="node-label-name">Windsurf</div>
+    <div class="node-label-type">metacognition in flow</div>
+  </div>
+  <div class="node-label" id="label-codemaps">
+    <div class="node-label-name">Codemaps</div>
+    <div class="node-label-type">cartography</div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="scroll-hint" id="scrollHint">scroll to explore the network</div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Detail panel -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-close" id="detailClose">×</div>
+    <div id="detailContent"></div>
+  </div>
+
+  <!-- Bottom content -->
+  <div class="bottom-content" id="bottomContent">
+    <!-- Manifesto -->
+    <section class="section" id="manifesto">
+      <div class="manifesto">
+        <h2>◈ MANIFESTO ◈</h2>
+        <p>
+          <span style="font-size: 2em; float: left; line-height: 1; margin-right: 8px; color: var(--glow-bright); font-family: 'Orbitron', sans-serif;">T</span>he question of labor automation has never been so top of mind. As some of the first to ever say it, we at Cognition have been thinking about what comes after. We believe that "units of labor" previously thought of as human software engineers can now be delegated powerfully, but the world has not yet caught up with how to do this.
+        </p>
+        <p>
+          While thinking about the way we think, the ancient technology of <span class="blue">cartography</span> came to mind as a compression technology that makes it easier to take action. While the map is most certainly not the territory, <span class="highlight">Codemaps</span> has made it easier than ever for us to delegate effectively, turning every person into a CEO.
+        </p>
+        <p>
+          Our new era of metacognition reflects the data we have gathered over the past few years. We hope you will join us to <span class="highlight">think a bit about thinking</span>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Event -->
+    <section class="section" id="event">
+      <div class="event-section">
+        <div class="event-header">
+          <h2>THE COGNITION OBSERVATORY</h2>
+          <p>GRAND OPENING</p>
+        </div>
+        <div class="event-body">
+          <div class="event-details">
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <div class="event-meta-label">DATE & TIME</div>
+                <div class="event-meta-value">JAN 15, 2025</div>
+                <div class="event-meta-sub">19:00 - 23:00 PST</div>
+              </div>
+              <div class="event-meta-item">
+                <div class="event-meta-label">LOCATION</div>
+                <div class="event-meta-value">THE NEXUS</div>
+                <div class="event-meta-sub">San Francisco, CA</div>
+              </div>
+            </div>
+            <p class="event-desc">
+              Step into the Observatory—a convergence point for minds exploring the frontier of cognitive enhancement and artificial intelligence. Experience immersive installations, engage in discourse with fellow neural explorers, and witness demonstrations that blur the line between human thought and machine intelligence.
+            </p>
+          </div>
+          <div class="event-rsvp">
+            <div class="rsvp-title">CONNECTED NODES</div>
+            <div class="attendees" id="attendees">
+              <div class="attendee" style="background: linear-gradient(135deg, #00ffd0, #00aa90);" title="Neural Pioneer">N</div>
+              <div class="attendee" style="background: linear-gradient(135deg, #4dabff, #3080cc);" title="Synaptic Explorer">S</div>
+              <div class="attendee" style="background: linear-gradient(135deg, #00ffd0, #00aa90);" title="Cognitive Wanderer">C</div>
+              <div class="attendee-add">+</div>
+            </div>
+            <div id="rsvpForm">
+              <div class="form-group">
+                <label class="form-label">NEURAL ID (NAME)</label>
+                <input type="text" class="form-input" id="rsvpName" placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <label class="form-label">SYNAPSE ADDRESS (EMAIL)</label>
+                <input type="email" class="form-input" id="rsvpEmail" placeholder="Enter your email">
+              </div>
+              <button class="btn-primary" id="rsvpSubmit">CONFIRM ATTENDANCE</button>
+            </div>
+            <div id="rsvpSuccess" style="display: none;">
+              <div class="success-message">
+                <div class="success-icon">✓</div>
+                <h3>REGISTRATION COMPLETE</h3>
+                <p>Your neural pathway has been mapped. Coordinates incoming.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter" id="newsletter">
+      <h2>JOIN THE NETWORK</h2>
+      <p>ESTABLISH YOUR NEURAL CONNECTION</p>
+      <div class="newsletter-form" id="newsletterForm">
+        <input type="email" class="form-input" id="newsletterEmail" placeholder="Enter your email">
+        <button class="btn-primary" id="newsletterSubmit">CONNECT</button>
+      </div>
+      <div id="newsletterSuccess" style="display: none;">
+        <div class="success-message">
+          <div class="success-icon">🧠⚡</div>
+          <h3>NEURAL LINK ESTABLISHED</h3>
+          <p>Prepare to think about thinking.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>◈ COGNITION LABS ◈</p>
+      <p style="margin-top: 8px; opacity: 0.5;">THINK DIFFERENT. THINK ABOUT IT.</p>
+    </footer>
+  </div>
+
+  <script>
+    // === CANVAS ===
+    const canvas = document.getElementById('sky');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let scrollProgress = 0;
+    let time = 0;
+    let hoveredNode = null;
+    let mouseX = 0, mouseY = 0;
+
+    // Product nodes
+    const products = {
+      devin: {
+        name: 'Devin',
+        type: 'labor abstraction',
+        status: 'live',
+        basePos: { x: 0.25, y: 0.3 },
+        desc: 'Autonomous software engineer. You describe work, it executes end-to-end.',
+        details: `
+          <div class="detail-section">
+            <div class="detail-section-title">What it does</div>
+            <ul class="detail-list">
+              <li>Takes tickets, PRs, or plain English and ships working code</li>
+              <li>Maintains its own environment—runs tests, debugs, iterates</li>
+              <li>Learns your codebase patterns over time</li>
+              <li>Handles 40-60% of routine engineering work autonomously</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">The abstraction</div>
+            <p style="font-size: 13px; color: var(--text); line-height: 1.7; margin-bottom: 12px;">
+              Devin abstracts <em>labor</em>. You stop asking "who will do this" and start asking "what needs to happen."
+            </p>
+            <div class="detail-code">
+<span class="dim">// before: assign engineer, wait, review</span>
+<span class="dim">// after:</span>
+<span class="hl">devin</span>.work(<span class="str">"migrate auth to OAuth2"</span>)
+            </div>
+          </div>
+        `
+      },
+      ask: {
+        name: 'Ask Devin',
+        type: 'focused reasoning',
+        status: 'live',
+        basePos: { x: 0.4, y: 0.5 },
+        desc: 'Questions as probes. Interrogate your codebase with natural language.',
+        details: `
+          <div class="detail-section">
+            <div class="detail-section-title">What it does</div>
+            <ul class="detail-list">
+              <li>Answers questions requiring reading thousands of files</li>
+              <li>Traces data flow, finds usages, explains architecture</li>
+              <li>Returns citations—links to exact lines of code</li>
+              <li>Each question is a bounded, focused reasoning task</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Example</div>
+            <div class="detail-code">
+<span class="str">"What happens if checkout fails mid-transaction?"</span>
+
+<span class="dim">→ traces 47 files</span>
+<span class="dim">→ identifies 3 error paths</span>
+<span class="dim">→ flags missing rollback at</span> <span class="hl">payments/stripe.go:234</span>
+            </div>
+          </div>
+        `
+      },
+      wiki: {
+        name: 'DeepWiki',
+        type: 'externalized understanding',
+        status: 'live',
+        basePos: { x: 0.3, y: 0.65 },
+        desc: 'Understanding that persists. Auto-generated, always-current documentation.',
+        details: `
+          <div class="detail-section">
+            <div class="detail-section-title">What it does</div>
+            <ul class="detail-list">
+              <li>Generates comprehensive docs from any codebase</li>
+              <li>Updates continuously as code changes</li>
+              <li>Structures knowledge hierarchically</li>
+              <li>Powers onboarding, audits, compliance</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">The abstraction</div>
+            <p style="font-size: 13px; color: var(--text); line-height: 1.7;">
+              Understanding stops living in people's heads. Answers accumulate into navigable structure.
+            </p>
+          </div>
+        `
+      },
+      windsurf: {
+        name: 'Windsurf',
+        type: 'metacognition in flow',
+        status: 'beta',
+        basePos: { x: 0.6, y: 0.4 },
+        desc: 'IDE with awareness. Cognition embedded in your workflow.',
+        details: `
+          <div class="detail-section">
+            <div class="detail-section-title">What it does</div>
+            <ul class="detail-list">
+              <li>Full IDE with Devin-class reasoning built in</li>
+              <li>Understands what you're trying to do from context</li>
+              <li>Suggests architectural decisions, not just code</li>
+              <li>Maintains conversation state across sessions</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">The abstraction</div>
+            <p style="font-size: 13px; color: var(--text); line-height: 1.7;">
+              You stop context-switching between thinking and asking. Metacognition becomes ambient.
+            </p>
+          </div>
+        `
+      },
+      codemaps: {
+        name: 'Codemaps',
+        type: 'cartography of systems',
+        status: 'internal',
+        basePos: { x: 0.55, y: 0.6 },
+        desc: 'The map exists. Questions disappear because you can see.',
+        details: `
+          <div class="detail-section">
+            <div class="detail-section-title">What it does</div>
+            <ul class="detail-list">
+              <li>Visual, interactive maps of entire architectures</li>
+              <li>Navigate dependencies, data flows, failure modes</li>
+              <li>Zoom from 10,000ft to individual functions</li>
+              <li>The substrate everything else builds on</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">The turning point</div>
+            <p style="font-size: 13px; color: var(--text); line-height: 1.7;">
+              This is where questions disappear. You don't ask "how does this work"—you <em>look</em>. Metacognition becomes the medium itself.
+            </p>
+          </div>
+        `
+      }
+    };
+
+    // Background neurons
+    let neurons = [];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initNeurons();
+    }
+
+    function initNeurons() {
+      neurons = [];
+      const count = Math.floor((width * height) / 6000);
+
+      for (let i = 0; i < count; i++) {
+        neurons.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          z: Math.random(),
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          baseRadius: Math.random() * 2.5 + 1,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function getNodePosition(key) {
+      const product = products[key];
+      const base = product.basePos;
+
+      // Expand positions as you scroll
+      const expansion = 1 + scrollProgress * 1.5;
+      const centerX = width * 0.45;
+      const centerY = height * 0.45;
+
+      const offsetX = (base.x - 0.45) * width * expansion;
+      const offsetY = (base.y - 0.45) * height * expansion;
+
+      return {
+        x: centerX + offsetX,
+        y: centerY + offsetY
+      };
+    }
+
+    function drawSky() {
+      // Clear
+      ctx.fillStyle = '#040608';
+      ctx.fillRect(0, 0, width, height);
+
+      // Subtle gradient
+      const grad = ctx.createRadialGradient(
+        width * 0.4, height * 0.4, 0,
+        width * 0.5, height * 0.5, Math.max(width, height)
+      );
+      grad.addColorStop(0, '#0a1418');
+      grad.addColorStop(0.5, '#060a0c');
+      grad.addColorStop(1, '#040608');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Update and draw background neurons
+      for (let n of neurons) {
+        n.x += n.vx;
+        n.y += n.vy;
+        n.phase += 0.01;
+
+        // Bounce
+        if (n.x < 0 || n.x > width) n.vx *= -1;
+        if (n.y < 0 || n.y > height) n.vy *= -1;
+
+        const pulse = 0.6 + Math.sin(n.phase) * 0.4;
+        const depthScale = 0.3 + (1 - n.z) * 0.7;
+        const radius = n.baseRadius * pulse * depthScale;
+        const alpha = (0.15 + (1 - n.z) * 0.35) * pulse;
+
+        // Glow
+        const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, radius * 5);
+        glow.addColorStop(0, `rgba(79, 209, 197, ${alpha * 0.3})`);
+        glow.addColorStop(0.5, `rgba(79, 209, 197, ${alpha * 0.08})`);
+        glow.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, radius * 5, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+
+        // Core
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 232, 232, ${alpha})`;
+        ctx.fill();
+      }
+
+      // Draw connections between background neurons
+      ctx.strokeStyle = 'rgba(79, 209, 197, 0.04)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < neurons.length; i++) {
+        for (let j = i + 1; j < neurons.length; j++) {
+          const n1 = neurons[i];
+          const n2 = neurons[j];
+          const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(n1.x, n1.y);
+            ctx.lineTo(n2.x, n2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw product nodes and their connections
+      const nodeKeys = Object.keys(products);
+      const nodePositions = {};
+
+      // Calculate positions
+      nodeKeys.forEach(key => {
+        nodePositions[key] = getNodePosition(key);
+      });
+
+      // Draw connections between product nodes
+      const connections = [
+        ['devin', 'ask'],
+        ['ask', 'wiki'],
+        ['ask', 'windsurf'],
+        ['wiki', 'codemaps'],
+        ['windsurf', 'codemaps']
+      ];
+
+      const revealThreshold = 0.08;
+
+      connections.forEach(([from, to], i) => {
+        const fromPos = nodePositions[from];
+        const toPos = nodePositions[to];
+        const threshold = revealThreshold + i * 0.08;
+
+        if (scrollProgress > threshold) {
+          const alpha = Math.min(1, (scrollProgress - threshold) * 5) * 0.5;
+
+          // Gradient line
+          const grad = ctx.createLinearGradient(fromPos.x, fromPos.y, toPos.x, toPos.y);
+          grad.addColorStop(0, `rgba(79, 209, 197, ${alpha})`);
+          grad.addColorStop(0.5, `rgba(77, 171, 255, ${alpha * 1.2})`);
+          grad.addColorStop(1, `rgba(79, 209, 197, ${alpha})`);
+
+          ctx.beginPath();
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(fromPos.x, fromPos.y);
+          ctx.lineTo(toPos.x, toPos.y);
+          ctx.stroke();
+        }
+      });
+
+      // Draw product nodes
+      nodeKeys.forEach((key, i) => {
+        const product = products[key];
+        const pos = nodePositions[key];
+        const threshold = revealThreshold + i * 0.06;
+
+        if (scrollProgress > threshold) {
+          const revealAlpha = Math.min(1, (scrollProgress - threshold) * 4);
+
+          // Check if hovered
+          const isHovered = hoveredNode === key;
+          const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
+
+          // Large glow
+          const glowSize = isHovered ? 80 : 50;
+          const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowSize);
+          glow.addColorStop(0, `rgba(0, 255, 208, ${revealAlpha * (isHovered ? 0.6 : 0.4)})`);
+          glow.addColorStop(0.3, `rgba(77, 171, 255, ${revealAlpha * 0.2})`);
+          glow.addColorStop(1, 'transparent');
+
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, glowSize, 0, Math.PI * 2);
+          ctx.fillStyle = glow;
+          ctx.fill();
+
+          // Core
+          const coreSize = isHovered ? 10 : 7;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, coreSize, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 255, 208, ${revealAlpha})`;
+          ctx.fill();
+
+          // Update label position
+          const label = document.getElementById(`label-${key}`);
+          if (label) {
+            label.style.left = `${pos.x + 20}px`;
+            label.style.top = `${pos.y - 10}px`;
+            label.classList.toggle('visible', scrollProgress > threshold + 0.02);
+          }
+        }
+      });
+
+      time += 0.016;
+    }
+
+    // Hit detection for nodes
+    function getHoveredNode() {
+      const nodeKeys = Object.keys(products);
+      for (const key of nodeKeys) {
+        const pos = getNodePosition(key);
+        const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
+        if (dist < 40) return key;
+      }
+      return null;
+    }
+
+    // Mouse handling
+    canvas.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      const newHovered = getHoveredNode();
+      if (newHovered !== hoveredNode) {
+        hoveredNode = newHovered;
+        canvas.style.cursor = hoveredNode ? 'pointer' : 'default';
+      }
+    });
+
+    canvas.addEventListener('click', () => {
+      if (hoveredNode) {
+        showDetail(hoveredNode);
+      }
+    });
+
+    // Detail panel
+    const detailPanel = document.getElementById('detailPanel');
+    const detailContent = document.getElementById('detailContent');
+    const detailClose = document.getElementById('detailClose');
+    const overlay = document.getElementById('overlay');
+
+    function showDetail(key) {
+      const product = products[key];
+      const statusClass = product.status === 'live' ? 'status-live' :
+                         product.status === 'beta' ? 'status-beta' : 'status-internal';
+
+      detailContent.innerHTML = `
+        <div class="detail-name">${product.name}<span class="detail-status ${statusClass}">${product.status}</span></div>
+        <div class="detail-type">${product.type}</div>
+        <div class="detail-desc">${product.desc}</div>
+        ${product.details}
+      `;
+
+      detailPanel.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function hideDetail() {
+      detailPanel.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    detailClose.addEventListener('click', hideDetail);
+    overlay.addEventListener('click', hideDetail);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hideDetail();
+    });
+
+    // Scroll handling
+    function handleScroll() {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      scrollProgress = window.scrollY / scrollHeight;
+
+      // Update progress
+      document.getElementById('progressFill').style.height = `${scrollProgress * 100}%`;
+
+      // Scroll hint
+      document.getElementById('scrollHint').classList.toggle('hidden', scrollProgress > 0.05);
+
+      // Text panels
+      document.getElementById('panel-intro').classList.toggle('visible', scrollProgress < 0.15);
+      document.getElementById('panel-ladder').classList.toggle('visible', scrollProgress > 0.12 && scrollProgress < 0.35);
+      document.getElementById('panel-thesis').classList.toggle('visible', scrollProgress > 0.32 && scrollProgress < 0.55);
+    }
+
+    // Form handling
+    document.getElementById('rsvpSubmit').addEventListener('click', () => {
+      const name = document.getElementById('rsvpName').value;
+      const email = document.getElementById('rsvpEmail').value;
+
+      if (name && email) {
+        // Add to attendees
+        const attendees = document.getElementById('attendees');
+        const initial = name.charAt(0).toUpperCase();
+        const colors = ['#00ffd0', '#4dabff'];
+        const color = colors[Math.floor(Math.random() * 2)];
+
+        const newAttendee = document.createElement('div');
+        newAttendee.className = 'attendee';
+        newAttendee.style.background = `linear-gradient(135deg, ${color}, ${color}88)`;
+        newAttendee.title = name;
+        newAttendee.textContent = initial;
+
+        attendees.insertBefore(newAttendee, attendees.lastElementChild);
+
+        // Show success
+        document.getElementById('rsvpForm').style.display = 'none';
+        document.getElementById('rsvpSuccess').style.display = 'block';
+      }
+    });
+
+    document.getElementById('newsletterSubmit').addEventListener('click', () => {
+      const email = document.getElementById('newsletterEmail').value;
+      if (email) {
+        document.getElementById('newsletterForm').style.display = 'none';
+        document.getElementById('newsletterSuccess').style.display = 'block';
+      }
+    });
+
+    // Animation loop
+    function animate() {
+      drawSky();
+      requestAnimationFrame(animate);
+    }
+
+    // Init
+    window.addEventListener('resize', resize);
+    window.addEventListener('scroll', handleScroll);
+
+    resize();
+    animate();
+    handleScroll();
+  </script>
+</body>
 </html>
