@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cognition</title>
+  <title>[meta]cognition</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&family=Inter:wght@300;400;500&family=Orbitron:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600&display=swap');
 
     * {
       margin: 0;
@@ -28,6 +28,7 @@
       --glow-bright: #00ffd0;
       --accent: #81e6d9;
       --blue: #4dabff;
+      --red: #f87171;
     }
 
     html {
@@ -37,12 +38,139 @@
     body {
       background: var(--void);
       color: var(--text);
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
       overflow-x: hidden;
     }
 
-    .mono {
+    /* Password screen */
+
+    .password-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--void);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .password-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .password-container {
+      text-align: center;
+      max-width: 400px;
+      padding: 24px;
+    }
+
+    .password-icon {
+      font-size: 48px;
+      margin-bottom: 24px;
+      opacity: 0.6;
+    }
+
+    .password-title {
       font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--glow);
+      letter-spacing: 0.25em;
+      margin-bottom: 8px;
+    }
+
+    .password-subtitle {
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: 0.08em;
+      margin-bottom: 40px;
+    }
+
+    .password-input-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 16px 24px;
+      background: rgba(0, 10, 20, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--bright);
+      font-size: 18px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.3em;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .password-input:focus {
+      border-color: var(--glow);
+      box-shadow: 0 0 20px rgba(79, 209, 197, 0.2);
+    }
+
+    .password-input.error {
+      border-color: var(--red);
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .password-input::-moz-placeholder {
+      color: var(--dim);
+      letter-spacing: 0.2em;
+    }
+
+    .password-input::placeholder {
+      color: var(--dim);
+      letter-spacing: 0.2em;
+    }
+
+    .password-btn {
+      width: 100%;
+      padding: 14px 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .password-btn:hover {
+      border-color: var(--glow);
+      color: var(--glow);
+      box-shadow: 0 0 20px rgba(79, 209, 197, 0.15);
+    }
+
+    .password-error {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--red);
+      margin-top: 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      letter-spacing: 0.1em;
+    }
+
+    .password-error.visible {
+      opacity: 1;
     }
 
     /* Canvas */
@@ -56,10 +184,10 @@
       z-index: 1;
     }
 
-    /* Scroll container */
+    /* Scroll container - reduced from 800vh to 500vh for faster scrolling */
 
     .scroll-space {
-      height: 800vh;
+      height: 500vh;
       position: relative;
       z-index: 0;
     }
@@ -71,57 +199,68 @@
       top: 0;
       left: 0;
       right: 0;
-      padding: 20px 32px;
+      padding: 20px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 100;
-      background: linear-gradient(to bottom, rgba(4,6,8,0.9) 0%, transparent 100%);
+      background: linear-gradient(to bottom, rgba(4,6,8,0.95) 0%, transparent 100%);
     }
 
     .logo {
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
       color: var(--bright);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.02em;
+    }
+
+    .logo .bracket {
+      color: var(--glow);
     }
 
     .nav {
       display: flex;
-      gap: 32px;
+      gap: 28px;
     }
 
     .nav a {
       font-size: 11px;
       color: var(--muted);
       text-decoration: none;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
       font-family: 'JetBrains Mono', monospace;
-      transition: color 0.3s;
+      transition: color 0.3s ease;
     }
 
     .nav a:hover {
       color: var(--text);
     }
 
-    /* Progress bar - LEFT SIDE */
+    @media (max-width: 500px) {
+      .nav {
+        gap: 16px;
+      }
+      .nav a {
+        font-size: 10px;
+      }
+    }
+
+    /* Progress bar - bottom right, out of the way */
 
     .progress {
       position: fixed;
-      left: 24px;
-      top: 50%;
-      transform: translateY(-50%);
+      bottom: 28px;
+      right: 28px;
       z-index: 200;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .progress-track {
-      width: 2px;
-      height: 150px;
+      width: 80px;
+      height: 2px;
       background: var(--border);
       border-radius: 1px;
       position: relative;
@@ -131,92 +270,101 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
+      height: 100%;
       background: var(--glow);
       border-radius: 1px;
-      box-shadow: 0 0 10px var(--glow);
-      transition: height 0.1s;
+      box-shadow: 0 0 8px var(--glow);
+      transition: width 0.15s ease;
     }
 
-    .progress-label {
-      font-size: 8px;
+    .progress-text {
       font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
       color: var(--dim);
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      letter-spacing: 0.15em;
-      transform: rotate(180deg);
-    }
-
-    /* Text panels - SIDES ONLY */
-
-    .text-panel {
-      position: fixed;
-      z-index: 50;
-      max-width: 400px;
-      opacity: 0;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      pointer-events: none;
-    }
-
-    .text-panel.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .text-panel.left {
-      left: 60px;
-      transform: translateX(-20px);
-    }
-
-    .text-panel.left.visible {
-      transform: translateX(0);
-    }
-
-    .text-panel.right {
-      right: 60px;
-      transform: translateX(20px);
-    }
-
-    .text-panel.right.visible {
-      transform: translateX(0);
-    }
-
-    .text-panel h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(24px, 3vw, 36px);
-      font-weight: 400;
-      color: var(--bright);
-      line-height: 1.3;
-      margin-bottom: 16px;
-      letter-spacing: 0.02em;
-    }
-
-    .text-panel h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(18px, 2vw, 24px);
-      font-weight: 400;
-      color: var(--glow-bright);
-      margin-bottom: 12px;
       letter-spacing: 0.05em;
     }
 
-    .text-panel p {
-      font-size: 14px;
-      color: var(--subtle);
-      line-height: 1.7;
+    @media (max-width: 600px) {
+      .progress {
+        display: none;
+      }
     }
 
-    .text-panel .label {
-      font-size: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--dim);
-      letter-spacing: 0.2em;
+    /* Hero text - simple, top center, fades out on scroll */
+
+    .hero-text {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 50;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+      max-width: 500px;
+      padding: 0 24px;
+    }
+
+    .hero-text.hidden {
+      opacity: 0;
+    }
+
+    .hero-text h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 500;
+      color: var(--bright);
+      line-height: 1.3;
       margin-bottom: 12px;
-      text-transform: uppercase;
+      letter-spacing: -0.02em;
     }
 
-    /* Product detail panel */
+    .hero-text p {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* Node labels */
+
+    .node-label {
+      position: fixed;
+      z-index: 60;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    .node-label.visible {
+      opacity: 1;
+    }
+
+    .node-label-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--bright);
+      margin-bottom: 2px;
+    }
+
+    .node-label-type {
+      font-size: 9px;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .node-label.classified .node-label-name {
+      color: var(--red);
+    }
+
+    .node-label.classified .node-label-type {
+      color: rgba(248, 113, 113, 0.5);
+    }
+
+    /* Detail panel */
 
     .detail-panel {
       position: fixed;
@@ -224,15 +372,17 @@
       top: 50%;
       transform: translate(-50%, -50%);
       width: 90%;
-      max-width: 500px;
-      background: rgba(6, 10, 12, 0.95);
+      max-width: 460px;
+      max-height: 80vh;
+      overflow-y: auto;
+      background: rgba(6, 10, 12, 0.97);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 32px;
       z-index: 300;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
       backdrop-filter: blur(20px);
     }
 
@@ -243,17 +393,17 @@
 
     .detail-close {
       position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 32px;
-      height: 32px;
+      top: 18px;
+      right: 18px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--muted);
       cursor: pointer;
-      font-size: 20px;
-      transition: color 0.2s;
+      font-size: 18px;
+      transition: color 0.2s ease;
       border: 1px solid var(--border);
       border-radius: 50%;
     }
@@ -264,8 +414,9 @@
     }
 
     .detail-name {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 24px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
       color: var(--bright);
       margin-bottom: 4px;
     }
@@ -274,26 +425,26 @@
       font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--glow);
-      letter-spacing: 0.1em;
-      margin-bottom: 20px;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
     }
 
     .detail-desc {
       font-size: 14px;
       color: var(--text);
-      line-height: 1.8;
+      line-height: 1.7;
       margin-bottom: 24px;
     }
 
     .detail-section {
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .detail-section-title {
       font-size: 9px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--dim);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
@@ -305,7 +456,7 @@
     .detail-list li {
       font-size: 13px;
       color: var(--subtle);
-      padding: 8px 0;
+      padding: 10px 0;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: flex-start;
@@ -331,6 +482,7 @@
       font-size: 11px;
       color: var(--muted);
       overflow-x: auto;
+      line-height: 1.6;
     }
 
     .detail-code .hl { color: var(--glow); }
@@ -347,48 +499,35 @@
       border-radius: 4px;
       margin-left: 12px;
       vertical-align: middle;
-    }
-
-    .status-live {
-      background: rgba(79, 209, 197, 0.15);
+      background: rgba(79, 209, 197, 0.12);
       color: var(--glow);
     }
 
-    .status-beta {
-      background: rgba(129, 140, 248, 0.15);
-      color: #a5b4fc;
+    /* Classified panel */
+
+    .detail-classified {
+      text-align: center;
+      padding: 36px 20px;
     }
 
-    .status-internal {
-      background: rgba(251, 191, 36, 0.1);
-      color: #fcd34d;
+    .detail-classified .icon {
+      font-size: 44px;
+      margin-bottom: 18px;
     }
 
-    /* Node labels (floating near nodes) */
-
-    .node-label {
-      position: fixed;
-      z-index: 60;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.5s;
+    .detail-classified h3 {
       font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--red);
+      margin-bottom: 14px;
+      letter-spacing: 0.08em;
     }
 
-    .node-label.visible {
-      opacity: 1;
-    }
-
-    .node-label-name {
-      font-size: 12px;
-      color: var(--bright);
-      margin-bottom: 2px;
-    }
-
-    .node-label-type {
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
+    .detail-classified p {
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.7;
     }
 
     /* Scroll hint */
@@ -401,37 +540,57 @@
       font-size: 10px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--dim);
-      letter-spacing: 0.2em;
+      letter-spacing: 0.12em;
       z-index: 50;
-      transition: opacity 1s;
+      transition: opacity 0.8s ease;
     }
 
     .scroll-hint.hidden {
       opacity: 0;
     }
 
-    /* Bottom sections container */
+    /* Overlay */
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 250;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Bottom content */
 
     .bottom-content {
       position: relative;
       z-index: 100;
-      background: linear-gradient(to bottom, transparent 0%, var(--void) 100px, var(--void) 100%);
-      padding-top: 150px;
+      background: linear-gradient(to bottom, transparent 0%, var(--void) 150px, var(--void) 100%);
+      padding-top: 200px;
     }
 
     .section {
-      max-width: 900px;
+      max-width: 760px;
       margin: 0 auto;
-      padding: 80px 32px;
+      padding: 60px 28px;
     }
 
     /* Manifesto */
 
     .manifesto {
-      background: rgba(10, 20, 30, 0.6);
+      background: rgba(10, 20, 30, 0.5);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 48px;
+      border-radius: 16px;
+      padding: 44px 36px;
       backdrop-filter: blur(20px);
       position: relative;
       overflow: hidden;
@@ -443,69 +602,81 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 2px;
+      height: 1px;
       background: linear-gradient(90deg, transparent, var(--glow), transparent);
     }
 
     .manifesto h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(20px, 3vw, 28px);
-      color: var(--glow-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--glow);
       margin-bottom: 32px;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.2em;
       text-align: center;
     }
 
-    .manifesto p {
-      font-size: 15px;
-      line-height: 2;
+    .manifesto-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      line-height: 1.85;
       color: var(--text);
-      text-align: justify;
+      font-weight: 400;
     }
 
-    .manifesto p + p {
-      margin-top: 24px;
+    .manifesto-text p + p {
+      margin-top: 22px;
     }
 
-    .manifesto .highlight {
+    .manifesto-text .highlight {
       color: var(--glow-bright);
-      font-weight: 500;
     }
 
-    .manifesto .blue {
+    .manifesto-text .blue {
       color: var(--blue);
+    }
+
+    .manifesto-text .dropcap {
+      font-size: 2.8em;
+      float: left;
+      line-height: 0.85;
+      margin-right: 10px;
+      margin-top: 5px;
+      color: var(--glow-bright);
+      font-weight: 300;
     }
 
     /* Event section */
 
     .event-section {
-      background: rgba(10, 20, 30, 0.6);
+      background: rgba(10, 20, 30, 0.5);
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: 16px;
       overflow: hidden;
       backdrop-filter: blur(20px);
     }
 
     .event-header {
-      background: linear-gradient(90deg, rgba(0, 255, 208, 0.1) 0%, rgba(77, 171, 255, 0.1) 100%);
-      padding: 40px;
+      background: linear-gradient(90deg, rgba(0, 255, 208, 0.06) 0%, rgba(77, 171, 255, 0.06) 100%);
+      padding: 36px 28px;
       border-bottom: 1px solid var(--border);
       text-align: center;
     }
 
     .event-header h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(24px, 4vw, 36px);
-      color: var(--glow-bright);
-      letter-spacing: 0.1em;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 500;
+      color: var(--bright);
+      letter-spacing: -0.01em;
       margin-bottom: 8px;
     }
 
     .event-header p {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 12px;
-      color: var(--blue);
-      letter-spacing: 0.3em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--glow);
+      letter-spacing: 0.2em;
     }
 
     .event-body {
@@ -514,18 +685,18 @@
       gap: 0;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 700px) {
       .event-body {
         grid-template-columns: 1fr;
       }
     }
 
     .event-details {
-      padding: 40px;
+      padding: 32px;
       border-right: 1px solid var(--border);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 700px) {
       .event-details {
         border-right: none;
         border-bottom: 1px solid var(--border);
@@ -535,14 +706,14 @@
     .event-meta {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: 14px;
+      margin-bottom: 26px;
     }
 
     .event-meta-item {
-      background: rgba(0, 20, 40, 0.5);
-      padding: 20px;
-      border-radius: 12px;
+      background: rgba(0, 20, 40, 0.4);
+      padding: 18px;
+      border-radius: 10px;
       border: 1px solid var(--border);
     }
 
@@ -550,13 +721,14 @@
       font-size: 9px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--glow);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em;
       margin-bottom: 8px;
     }
 
     .event-meta-value {
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 14px;
+      font-weight: 500;
       color: var(--bright);
     }
 
@@ -573,36 +745,36 @@
     }
 
     .event-rsvp {
-      padding: 40px;
+      padding: 32px;
     }
 
     .rsvp-title {
       font-size: 10px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--blue);
-      letter-spacing: 0.15em;
-      margin-bottom: 20px;
+      letter-spacing: 0.1em;
+      margin-bottom: 18px;
     }
 
     .attendees {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 32px;
+      margin-bottom: 26px;
     }
 
     .attendee {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--void);
-      transition: transform 0.2s;
+      transition: transform 0.2s ease;
       cursor: default;
     }
 
@@ -611,26 +783,26 @@
     }
 
     .attendee-add {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       border: 2px dashed var(--dim);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--dim);
-      font-size: 20px;
+      font-size: 18px;
     }
 
     /* Forms */
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .form-label {
       display: block;
-      font-size: 10px;
+      font-size: 9px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--glow);
       letter-spacing: 0.1em;
@@ -640,14 +812,14 @@
     .form-input {
       width: 100%;
       padding: 14px 18px;
-      background: rgba(0, 10, 20, 0.8);
+      background: rgba(0, 10, 20, 0.7);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       color: var(--bright);
       font-size: 14px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Space Grotesk', sans-serif;
       outline: none;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s ease;
     }
 
     .form-input:focus {
@@ -662,58 +834,54 @@
       color: var(--dim);
     }
 
-    textarea.form-input {
-      resize: vertical;
-      min-height: 100px;
-    }
-
     .btn-primary {
       width: 100%;
-      padding: 16px 32px;
+      padding: 15px 28px;
       background: linear-gradient(135deg, var(--glow-bright) 0%, var(--blue) 100%);
       border: none;
-      border-radius: 50px;
+      border-radius: 8px;
       color: var(--void);
-      font-family: 'Orbitron', sans-serif;
-      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
       font-weight: 500;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 10px 40px rgba(0, 255, 208, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 255, 208, 0.15);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 15px 50px rgba(0, 255, 208, 0.3);
+      box-shadow: 0 12px 40px rgba(0, 255, 208, 0.25);
     }
 
-    /* Newsletter section */
+    /* Newsletter */
 
     .newsletter {
       text-align: center;
-      padding: 80px 32px;
+      padding: 60px 28px;
     }
 
     .newsletter h2 {
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(18px, 2.5vw, 24px);
-      color: var(--blue);
-      margin-bottom: 12px;
-      letter-spacing: 0.1em;
+      font-weight: 500;
+      color: var(--bright);
+      margin-bottom: 10px;
     }
 
     .newsletter p {
-      font-size: 13px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--muted);
-      margin-bottom: 32px;
-      letter-spacing: 0.1em;
+      margin-bottom: 28px;
+      letter-spacing: 0.08em;
     }
 
     .newsletter-form {
       display: flex;
       gap: 12px;
-      max-width: 500px;
+      max-width: 440px;
       margin: 0 auto;
     }
 
@@ -736,7 +904,7 @@
 
     .footer {
       text-align: center;
-      padding: 40px 20px;
+      padding: 36px 20px;
       border-top: 1px solid var(--border);
     }
 
@@ -744,24 +912,25 @@
       font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--dim);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em;
     }
 
-    /* Success state */
+    /* Success */
 
     .success-message {
       text-align: center;
-      padding: 40px;
+      padding: 36px;
     }
 
     .success-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
+      font-size: 40px;
+      margin-bottom: 14px;
     }
 
     .success-message h3 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 18px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
       color: var(--glow-bright);
       margin-bottom: 8px;
     }
@@ -771,218 +940,251 @@
       color: var(--muted);
     }
 
-    /* Overlay for panel */
+    /* Hide main content until unlocked */
 
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 250;
+    .main-content {
       opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
+      transition: opacity 0.5s ease;
     }
 
-    .overlay.active {
+    .main-content.visible {
       opacity: 1;
-      visibility: visible;
     }
   </style>
 </head>
 <body>
-  <canvas id="sky"></canvas>
-
-  <div class="scroll-space"></div>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">COGNITION</div>
-    <nav class="nav">
-      <a href="#manifesto">manifesto</a>
-      <a href="#event">event</a>
-      <a href="https://devin.ai" target="_blank">devin ↗</a>
-    </nav>
-  </header>
-
-  <!-- Progress -->
-  <div class="progress">
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div class="progress-label">SCROLL</div>
-  </div>
-
-  <!-- Text panels (sides only) -->
-  <div class="text-panel left" id="panel-intro" style="top: 30%;">
-    <div class="label">// the thesis</div>
-    <h1>Software that understands what it's doing</h1>
-    <p>We're building systems that reason about code, maintain context across tasks, and develop persistent understanding of the systems they work in.</p>
-  </div>
-
-  <div class="text-panel right" id="panel-ladder" style="top: 35%;">
-    <div class="label">// the product ladder</div>
-    <h2>Five layers of cognition</h2>
-    <p>Each product addresses a different relationship between human intent and machine execution. Click the nodes to explore.</p>
-  </div>
-
-  <div class="text-panel left" id="panel-thesis" style="top: 40%;">
-    <div class="label">// where this leads</div>
-    <h2>Metacognition</h2>
-    <p>Not tools that help you think. Software that thinks about itself thinking. Systems that model their own understanding and know when to defer.</p>
-  </div>
-
-  <!-- Node labels -->
-  <div class="node-label" id="label-devin">
-    <div class="node-label-name">Devin</div>
-    <div class="node-label-type">labor abstraction</div>
-  </div>
-  <div class="node-label" id="label-ask">
-    <div class="node-label-name">Ask Devin</div>
-    <div class="node-label-type">focused reasoning</div>
-  </div>
-  <div class="node-label" id="label-wiki">
-    <div class="node-label-name">DeepWiki</div>
-    <div class="node-label-type">externalized understanding</div>
-  </div>
-  <div class="node-label" id="label-windsurf">
-    <div class="node-label-name">Windsurf</div>
-    <div class="node-label-type">metacognition in flow</div>
-  </div>
-  <div class="node-label" id="label-codemaps">
-    <div class="node-label-name">Codemaps</div>
-    <div class="node-label-type">cartography</div>
-  </div>
-
-  <!-- Scroll hint -->
-  <div class="scroll-hint" id="scrollHint">scroll to explore the network</div>
-
-  <!-- Overlay -->
-  <div class="overlay" id="overlay"></div>
-
-  <!-- Detail panel -->
-  <div class="detail-panel" id="detailPanel">
-    <div class="detail-close" id="detailClose">×</div>
-    <div id="detailContent"></div>
-  </div>
-
-  <!-- Bottom content -->
-  <div class="bottom-content" id="bottomContent">
-    <!-- Manifesto -->
-    <section class="section" id="manifesto">
-      <div class="manifesto">
-        <h2>◈ MANIFESTO ◈</h2>
-        <p>
-          <span style="font-size: 2em; float: left; line-height: 1; margin-right: 8px; color: var(--glow-bright); font-family: 'Orbitron', sans-serif;">T</span>he question of labor automation has never been so top of mind. As some of the first to ever say it, we at Cognition have been thinking about what comes after. We believe that "units of labor" previously thought of as human software engineers can now be delegated powerfully, but the world has not yet caught up with how to do this.
-        </p>
-        <p>
-          While thinking about the way we think, the ancient technology of <span class="blue">cartography</span> came to mind as a compression technology that makes it easier to take action. While the map is most certainly not the territory, <span class="highlight">Codemaps</span> has made it easier than ever for us to delegate effectively, turning every person into a CEO.
-        </p>
-        <p>
-          Our new era of metacognition reflects the data we have gathered over the past few years. We hope you will join us to <span class="highlight">think a bit about thinking</span>.
-        </p>
+  <!-- Password Screen -->
+  <div class="password-screen" id="passwordScreen">
+    <div class="password-container">
+      <div class="password-icon">◈</div>
+      <div class="password-title">FOR YOUR EYES ONLY</div>
+      <div class="password-subtitle">enter access code</div>
+      <div class="password-input-container">
+        <input
+          type="password"
+          class="password-input"
+          id="passwordInput"
+          placeholder="• • • • • •"
+          autocomplete="off"
+        >
       </div>
-    </section>
+      <button class="password-btn" id="passwordBtn">ENTER</button>
+      <div class="password-error" id="passwordError">ACCESS DENIED</div>
+    </div>
+  </div>
 
-    <!-- Event -->
-    <section class="section" id="event">
-      <div class="event-section">
-        <div class="event-header">
-          <h2>THE COGNITION OBSERVATORY</h2>
-          <p>GRAND OPENING</p>
-        </div>
-        <div class="event-body">
-          <div class="event-details">
-            <div class="event-meta">
-              <div class="event-meta-item">
-                <div class="event-meta-label">DATE & TIME</div>
-                <div class="event-meta-value">JAN 15, 2025</div>
-                <div class="event-meta-sub">19:00 - 23:00 PST</div>
-              </div>
-              <div class="event-meta-item">
-                <div class="event-meta-label">LOCATION</div>
-                <div class="event-meta-value">THE NEXUS</div>
-                <div class="event-meta-sub">San Francisco, CA</div>
-              </div>
-            </div>
-            <p class="event-desc">
-              Step into the Observatory—a convergence point for minds exploring the frontier of cognitive enhancement and artificial intelligence. Experience immersive installations, engage in discourse with fellow neural explorers, and witness demonstrations that blur the line between human thought and machine intelligence.
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <canvas id="sky"></canvas>
+
+    <div class="scroll-space"></div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo"><span class="bracket">[</span>meta<span class="bracket">]</span>cognition</div>
+      <nav class="nav">
+        <a href="#manifesto">manifesto</a>
+        <a href="#event">event</a>
+        <a href="https://devin.ai" target="_blank">devin ↗</a>
+      </nav>
+    </header>
+
+    <!-- Progress bar - horizontal, bottom right -->
+    <div class="progress">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+
+    <!-- Hero text - top center, doesn't cover nodes -->
+    <div class="hero-text" id="heroText">
+      <h1>Software that understands what it's doing</h1>
+      <p>click the nodes to explore</p>
+    </div>
+
+    <!-- Node labels -->
+    <div class="node-label" id="label-devin">
+      <div class="node-label-name">Devin</div>
+      <div class="node-label-type">labor abstraction</div>
+    </div>
+    <div class="node-label" id="label-ask">
+      <div class="node-label-name">Ask Devin</div>
+      <div class="node-label-type">focused reasoning</div>
+    </div>
+    <div class="node-label" id="label-wiki">
+      <div class="node-label-name">DeepWiki</div>
+      <div class="node-label-type">externalized understanding</div>
+    </div>
+    <div class="node-label" id="label-windsurf">
+      <div class="node-label-name">Windsurf</div>
+      <div class="node-label-type">metacognition in flow</div>
+    </div>
+    <div class="node-label" id="label-codemaps">
+      <div class="node-label-name">Codemaps</div>
+      <div class="node-label-type">cartography</div>
+    </div>
+    <div class="node-label classified" id="label-classified-0">
+      <div class="node-label-name">[ CLASSIFIED ]</div>
+      <div class="node-label-type">restricted</div>
+    </div>
+    <div class="node-label classified" id="label-classified-1">
+      <div class="node-label-name">[ CLASSIFIED ]</div>
+      <div class="node-label-type">restricted</div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint" id="scrollHint">scroll to explore</div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Detail panel -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-close" id="detailClose">×</div>
+      <div id="detailContent"></div>
+    </div>
+
+    <!-- Bottom content -->
+    <div class="bottom-content" id="bottomContent">
+      <section class="section" id="manifesto">
+        <div class="manifesto">
+          <h2>◈ MANIFESTO ◈</h2>
+          <div class="manifesto-text">
+            <p>
+              <span class="dropcap">T</span>he question of labor automation has never been so top of mind. As some of the first to ever say it, we at Cognition have been thinking about what comes after. We believe that "units of labor" previously thought of as human software engineers can now be delegated powerfully, but the world has not yet caught up with how to do this.
+            </p>
+            <p>
+              While thinking about the way we think, the ancient technology of <span class="blue">cartography</span> came to mind as a compression technology that makes it easier to take action. While the map is most certainly not the territory, <span class="highlight">Codemaps</span> has made it easier than ever for us to delegate effectively, turning every person into a CEO.
+            </p>
+            <p>
+              Our new era of metacognition reflects the data we have gathered over the past few years. We hope you will join us to <span class="highlight">think a bit about thinking</span>.
             </p>
           </div>
-          <div class="event-rsvp">
-            <div class="rsvp-title">CONNECTED NODES</div>
-            <div class="attendees" id="attendees">
-              <div class="attendee" style="background: linear-gradient(135deg, #00ffd0, #00aa90);" title="Neural Pioneer">N</div>
-              <div class="attendee" style="background: linear-gradient(135deg, #4dabff, #3080cc);" title="Synaptic Explorer">S</div>
-              <div class="attendee" style="background: linear-gradient(135deg, #00ffd0, #00aa90);" title="Cognitive Wanderer">C</div>
-              <div class="attendee-add">+</div>
-            </div>
-            <div id="rsvpForm">
-              <div class="form-group">
-                <label class="form-label">NEURAL ID (NAME)</label>
-                <input type="text" class="form-input" id="rsvpName" placeholder="Enter your name">
+        </div>
+      </section>
+
+      <section class="section" id="event">
+        <div class="event-section">
+          <div class="event-header">
+            <h2>The Cognition Observatory</h2>
+            <p>GRAND OPENING</p>
+          </div>
+          <div class="event-body">
+            <div class="event-details">
+              <div class="event-meta">
+                <div class="event-meta-item">
+                  <div class="event-meta-label">DATE</div>
+                  <div class="event-meta-value">Jan 15, 2025</div>
+                  <div class="event-meta-sub">19:00 – 23:00 PST</div>
+                </div>
+                <div class="event-meta-item">
+                  <div class="event-meta-label">LOCATION</div>
+                  <div class="event-meta-value">The Nexus</div>
+                  <div class="event-meta-sub">San Francisco, CA</div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">SYNAPSE ADDRESS (EMAIL)</label>
-                <input type="email" class="form-input" id="rsvpEmail" placeholder="Enter your email">
-              </div>
-              <button class="btn-primary" id="rsvpSubmit">CONFIRM ATTENDANCE</button>
+              <p class="event-desc">
+                Step into the Observatory—a convergence point for minds exploring the frontier of cognitive enhancement and artificial intelligence. Experience immersive installations and witness demonstrations that blur the line between human thought and machine intelligence.
+              </p>
             </div>
-            <div id="rsvpSuccess" style="display: none;">
-              <div class="success-message">
-                <div class="success-icon">✓</div>
-                <h3>REGISTRATION COMPLETE</h3>
-                <p>Your neural pathway has been mapped. Coordinates incoming.</p>
+            <div class="event-rsvp">
+              <div class="rsvp-title">CONNECTED NODES</div>
+              <div class="attendees" id="attendees">
+                <div class="attendee" style="background: linear-gradient(135deg, #00ffd0, #00aa90);" title="Neural Pioneer">N</div>
+                <div class="attendee" style="background: linear-gradient(135deg, #4dabff, #3080cc);" title="Synaptic Explorer">S</div>
+                <div class="attendee" style="background: linear-gradient(135deg, #00ffd0, #00aa90);" title="Cognitive Wanderer">C</div>
+                <div class="attendee-add">+</div>
+              </div>
+              <div id="rsvpForm">
+                <div class="form-group">
+                  <label class="form-label">NAME</label>
+                  <input type="text" class="form-input" id="rsvpName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">EMAIL</label>
+                  <input type="email" class="form-input" id="rsvpEmail" placeholder="Enter your email">
+                </div>
+                <button class="btn-primary" id="rsvpSubmit">CONFIRM ATTENDANCE</button>
+              </div>
+              <div id="rsvpSuccess" style="display: none;">
+                <div class="success-message">
+                  <div class="success-icon">✓</div>
+                  <h3>Registration Complete</h3>
+                  <p>Coordinates incoming.</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Newsletter -->
-    <section class="newsletter" id="newsletter">
-      <h2>JOIN THE NETWORK</h2>
-      <p>ESTABLISH YOUR NEURAL CONNECTION</p>
-      <div class="newsletter-form" id="newsletterForm">
-        <input type="email" class="form-input" id="newsletterEmail" placeholder="Enter your email">
-        <button class="btn-primary" id="newsletterSubmit">CONNECT</button>
-      </div>
-      <div id="newsletterSuccess" style="display: none;">
-        <div class="success-message">
-          <div class="success-icon">🧠⚡</div>
-          <h3>NEURAL LINK ESTABLISHED</h3>
-          <p>Prepare to think about thinking.</p>
+      <section class="newsletter" id="newsletter">
+        <h2>Join the Network</h2>
+        <p>STAY CONNECTED</p>
+        <div class="newsletter-form" id="newsletterForm">
+          <input type="email" class="form-input" id="newsletterEmail" placeholder="Enter your email">
+          <button class="btn-primary" id="newsletterSubmit">CONNECT</button>
         </div>
-      </div>
-    </section>
+        <div id="newsletterSuccess" style="display: none;">
+          <div class="success-message">
+            <div class="success-icon">⚡</div>
+            <h3>Connected</h3>
+            <p>You're in.</p>
+          </div>
+        </div>
+      </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>◈ COGNITION LABS ◈</p>
-      <p style="margin-top: 8px; opacity: 0.5;">THINK DIFFERENT. THINK ABOUT IT.</p>
-    </footer>
+      <footer class="footer">
+        <p><span class="bracket" style="color: var(--glow);">[</span>meta<span class="bracket" style="color: var(--glow);">]</span>cognition</p>
+      </footer>
+    </div>
   </div>
 
   <script>
-    // === CANVAS ===
-    const canvas = document.getElementById('sky');
-    const ctx = canvas.getContext('2d');
+    // Password protection
+    const PASSWORD = '314159';
+    const passwordScreen = document.getElementById('passwordScreen');
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordBtn = document.getElementById('passwordBtn');
+    const passwordError = document.getElementById('passwordError');
+    const mainContent = document.getElementById('mainContent');
+
+    function checkPassword() {
+      if (passwordInput.value === PASSWORD) {
+        passwordScreen.classList.add('hidden');
+        mainContent.classList.add('visible');
+        initCanvas();
+      } else {
+        passwordInput.classList.add('error');
+        passwordError.classList.add('visible');
+        setTimeout(() => {
+          passwordInput.classList.remove('error');
+          passwordError.classList.remove('visible');
+        }, 1500);
+      }
+    }
+
+    passwordBtn.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    // Canvas
+    let canvas, ctx;
     let width, height;
     let scrollProgress = 0;
     let time = 0;
     let hoveredNode = null;
     let mouseX = 0, mouseY = 0;
+    let neurons = [];
+    let initialized = false;
 
-    // Product nodes
     const products = {
       devin: {
         name: 'Devin',
         type: 'labor abstraction',
-        status: 'live',
-        basePos: { x: 0.25, y: 0.3 },
+        basePos: { x: 0.22, y: 0.28 },
         desc: 'Autonomous software engineer. You describe work, it executes end-to-end.',
         details: `
           <div class="detail-section">
@@ -991,16 +1193,14 @@
               <li>Takes tickets, PRs, or plain English and ships working code</li>
               <li>Maintains its own environment—runs tests, debugs, iterates</li>
               <li>Learns your codebase patterns over time</li>
-              <li>Handles 40-60% of routine engineering work autonomously</li>
             </ul>
           </div>
           <div class="detail-section">
             <div class="detail-section-title">The abstraction</div>
             <p style="font-size: 13px; color: var(--text); line-height: 1.7; margin-bottom: 12px;">
-              Devin abstracts <em>labor</em>. You stop asking "who will do this" and start asking "what needs to happen."
+              Devin abstracts <em>labor</em>. The bottleneck shifts from execution to specification.
             </p>
             <div class="detail-code">
-<span class="dim">// before: assign engineer, wait, review</span>
 <span class="dim">// after:</span>
 <span class="hl">devin</span>.work(<span class="str">"migrate auth to OAuth2"</span>)
             </div>
@@ -1010,8 +1210,7 @@
       ask: {
         name: 'Ask Devin',
         type: 'focused reasoning',
-        status: 'live',
-        basePos: { x: 0.4, y: 0.5 },
+        basePos: { x: 0.38, y: 0.48 },
         desc: 'Questions as probes. Interrogate your codebase with natural language.',
         details: `
           <div class="detail-section">
@@ -1019,18 +1218,16 @@
             <ul class="detail-list">
               <li>Answers questions requiring reading thousands of files</li>
               <li>Traces data flow, finds usages, explains architecture</li>
-              <li>Returns citations—links to exact lines of code</li>
-              <li>Each question is a bounded, focused reasoning task</li>
+              <li>Returns citations—links to exact lines</li>
             </ul>
           </div>
           <div class="detail-section">
             <div class="detail-section-title">Example</div>
             <div class="detail-code">
-<span class="str">"What happens if checkout fails mid-transaction?"</span>
+<span class="str">"What happens if checkout fails?"</span>
 
 <span class="dim">→ traces 47 files</span>
-<span class="dim">→ identifies 3 error paths</span>
-<span class="dim">→ flags missing rollback at</span> <span class="hl">payments/stripe.go:234</span>
+<span class="dim">→ flags missing rollback at</span> <span class="hl">stripe.go:234</span>
             </div>
           </div>
         `
@@ -1038,8 +1235,7 @@
       wiki: {
         name: 'DeepWiki',
         type: 'externalized understanding',
-        status: 'live',
-        basePos: { x: 0.3, y: 0.65 },
+        basePos: { x: 0.28, y: 0.68 },
         desc: 'Understanding that persists. Auto-generated, always-current documentation.',
         details: `
           <div class="detail-section">
@@ -1047,14 +1243,13 @@
             <ul class="detail-list">
               <li>Generates comprehensive docs from any codebase</li>
               <li>Updates continuously as code changes</li>
-              <li>Structures knowledge hierarchically</li>
               <li>Powers onboarding, audits, compliance</li>
             </ul>
           </div>
           <div class="detail-section">
             <div class="detail-section-title">The abstraction</div>
             <p style="font-size: 13px; color: var(--text); line-height: 1.7;">
-              Understanding stops living in people's heads. Answers accumulate into navigable structure.
+              Understanding stops living in heads. Answers accumulate into structure.
             </p>
           </div>
         `
@@ -1062,8 +1257,7 @@
       windsurf: {
         name: 'Windsurf',
         type: 'metacognition in flow',
-        status: 'beta',
-        basePos: { x: 0.6, y: 0.4 },
+        basePos: { x: 0.62, y: 0.38 },
         desc: 'IDE with awareness. Cognition embedded in your workflow.',
         details: `
           <div class="detail-section">
@@ -1072,13 +1266,12 @@
               <li>Full IDE with Devin-class reasoning built in</li>
               <li>Understands what you're trying to do from context</li>
               <li>Suggests architectural decisions, not just code</li>
-              <li>Maintains conversation state across sessions</li>
             </ul>
           </div>
           <div class="detail-section">
             <div class="detail-section-title">The abstraction</div>
             <p style="font-size: 13px; color: var(--text); line-height: 1.7;">
-              You stop context-switching between thinking and asking. Metacognition becomes ambient.
+              Metacognition becomes ambient—it's just there while you work.
             </p>
           </div>
         `
@@ -1086,8 +1279,7 @@
       codemaps: {
         name: 'Codemaps',
         type: 'cartography of systems',
-        status: 'internal',
-        basePos: { x: 0.55, y: 0.6 },
+        basePos: { x: 0.55, y: 0.62 },
         desc: 'The map exists. Questions disappear because you can see.',
         details: `
           <div class="detail-section">
@@ -1096,23 +1288,44 @@
               <li>Visual, interactive maps of entire architectures</li>
               <li>Navigate dependencies, data flows, failure modes</li>
               <li>Zoom from 10,000ft to individual functions</li>
-              <li>The substrate everything else builds on</li>
             </ul>
           </div>
           <div class="detail-section">
             <div class="detail-section-title">The turning point</div>
             <p style="font-size: 13px; color: var(--text); line-height: 1.7;">
-              This is where questions disappear. You don't ask "how does this work"—you <em>look</em>. Metacognition becomes the medium itself.
+              This is where questions disappear. You don't ask—you <em>look</em>.
             </p>
           </div>
         `
       }
     };
 
-    // Background neurons
-    let neurons = [];
+    const classified = [
+      { basePos: { x: 0.82, y: 0.30 }, delay: 0.35 },
+      { basePos: { x: 0.78, y: 0.72 }, delay: 0.4 },
+    ];
+
+    function initCanvas() {
+      if (initialized) return;
+      initialized = true;
+
+      canvas = document.getElementById('sky');
+      ctx = canvas.getContext('2d');
+
+      resize();
+      window.addEventListener('resize', resize);
+      window.addEventListener('scroll', handleScroll);
+
+      canvas.addEventListener('mousemove', handleMouseMove);
+      canvas.addEventListener('click', handleClick);
+      canvas.addEventListener('touchend', handleTouch);
+
+      animate();
+      handleScroll();
+    }
 
     function resize() {
+      if (!canvas) return;
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
       initNeurons();
@@ -1120,32 +1333,28 @@
 
     function initNeurons() {
       neurons = [];
-      const count = Math.floor((width * height) / 6000);
+      const count = Math.floor((width * height) / 5500);
 
       for (let i = 0; i < count; i++) {
         neurons.push({
           x: Math.random() * width,
           y: Math.random() * height,
           z: Math.random(),
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          baseRadius: Math.random() * 2.5 + 1,
+          vx: (Math.random() - 0.5) * 0.22,
+          vy: (Math.random() - 0.5) * 0.22,
+          baseRadius: Math.random() * 2 + 0.8,
           phase: Math.random() * Math.PI * 2
         });
       }
     }
 
-    function getNodePosition(key) {
-      const product = products[key];
-      const base = product.basePos;
-
-      // Expand positions as you scroll
-      const expansion = 1 + scrollProgress * 1.5;
+    function getNodePosition(basePos) {
+      const expansion = 1 + scrollProgress * 1.8;
       const centerX = width * 0.45;
       const centerY = height * 0.45;
 
-      const offsetX = (base.x - 0.45) * width * expansion;
-      const offsetY = (base.y - 0.45) * height * expansion;
+      const offsetX = (basePos.x - 0.45) * width * expansion;
+      const offsetY = (basePos.y - 0.45) * height * expansion;
 
       return {
         x: centerX + offsetX,
@@ -1154,11 +1363,11 @@
     }
 
     function drawSky() {
-      // Clear
+      if (!ctx) return;
+
       ctx.fillStyle = '#040608';
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle gradient
       const grad = ctx.createRadialGradient(
         width * 0.4, height * 0.4, 0,
         width * 0.5, height * 0.5, Math.max(width, height)
@@ -1169,47 +1378,41 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, width, height);
 
-      // Update and draw background neurons
       for (let n of neurons) {
         n.x += n.vx;
         n.y += n.vy;
-        n.phase += 0.01;
+        n.phase += 0.008;
 
-        // Bounce
         if (n.x < 0 || n.x > width) n.vx *= -1;
         if (n.y < 0 || n.y > height) n.vy *= -1;
 
         const pulse = 0.6 + Math.sin(n.phase) * 0.4;
         const depthScale = 0.3 + (1 - n.z) * 0.7;
         const radius = n.baseRadius * pulse * depthScale;
-        const alpha = (0.15 + (1 - n.z) * 0.35) * pulse;
+        const alpha = (0.12 + (1 - n.z) * 0.28) * pulse;
 
-        // Glow
-        const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, radius * 5);
-        glow.addColorStop(0, `rgba(79, 209, 197, ${alpha * 0.3})`);
-        glow.addColorStop(0.5, `rgba(79, 209, 197, ${alpha * 0.08})`);
+        const glow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, radius * 4);
+        glow.addColorStop(0, `rgba(79, 209, 197, ${alpha * 0.25})`);
         glow.addColorStop(1, 'transparent');
         ctx.beginPath();
-        ctx.arc(n.x, n.y, radius * 5, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, radius * 4, 0, Math.PI * 2);
         ctx.fillStyle = glow;
         ctx.fill();
 
-        // Core
         ctx.beginPath();
         ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(180, 232, 232, ${alpha})`;
         ctx.fill();
       }
 
-      // Draw connections between background neurons
-      ctx.strokeStyle = 'rgba(79, 209, 197, 0.04)';
+      ctx.strokeStyle = 'rgba(79, 209, 197, 0.03)';
       ctx.lineWidth = 0.5;
       for (let i = 0; i < neurons.length; i++) {
-        for (let j = i + 1; j < neurons.length; j++) {
+        for (let j = i + 1; j < Math.min(i + 10, neurons.length); j++) {
           const n1 = neurons[i];
           const n2 = neurons[j];
           const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-          if (dist < 120) {
+          if (dist < 100) {
             ctx.beginPath();
             ctx.moveTo(n1.x, n1.y);
             ctx.lineTo(n2.x, n2.y);
@@ -1218,16 +1421,12 @@
         }
       }
 
-      // Draw product nodes and their connections
       const nodeKeys = Object.keys(products);
       const nodePositions = {};
-
-      // Calculate positions
       nodeKeys.forEach(key => {
-        nodePositions[key] = getNodePosition(key);
+        nodePositions[key] = getNodePosition(products[key].basePos);
       });
 
-      // Draw connections between product nodes
       const connections = [
         ['devin', 'ask'],
         ['ask', 'wiki'],
@@ -1236,24 +1435,23 @@
         ['windsurf', 'codemaps']
       ];
 
-      const revealThreshold = 0.08;
+      const revealThreshold = 0.06;
 
       connections.forEach(([from, to], i) => {
         const fromPos = nodePositions[from];
         const toPos = nodePositions[to];
-        const threshold = revealThreshold + i * 0.08;
+        const threshold = revealThreshold + i * 0.06;
 
         if (scrollProgress > threshold) {
-          const alpha = Math.min(1, (scrollProgress - threshold) * 5) * 0.5;
+          const alpha = Math.min(1, (scrollProgress - threshold) * 4) * 0.5;
 
-          // Gradient line
-          const grad = ctx.createLinearGradient(fromPos.x, fromPos.y, toPos.x, toPos.y);
-          grad.addColorStop(0, `rgba(79, 209, 197, ${alpha})`);
-          grad.addColorStop(0.5, `rgba(77, 171, 255, ${alpha * 1.2})`);
-          grad.addColorStop(1, `rgba(79, 209, 197, ${alpha})`);
+          const lineGrad = ctx.createLinearGradient(fromPos.x, fromPos.y, toPos.x, toPos.y);
+          lineGrad.addColorStop(0, `rgba(79, 209, 197, ${alpha})`);
+          lineGrad.addColorStop(0.5, `rgba(77, 171, 255, ${alpha})`);
+          lineGrad.addColorStop(1, `rgba(79, 209, 197, ${alpha})`);
 
           ctx.beginPath();
-          ctx.strokeStyle = grad;
+          ctx.strokeStyle = lineGrad;
           ctx.lineWidth = 1.5;
           ctx.moveTo(fromPos.x, fromPos.y);
           ctx.lineTo(toPos.x, toPos.y);
@@ -1261,24 +1459,22 @@
         }
       });
 
-      // Draw product nodes
       nodeKeys.forEach((key, i) => {
         const product = products[key];
         const pos = nodePositions[key];
-        const threshold = revealThreshold + i * 0.06;
+        const threshold = revealThreshold + i * 0.05;
 
         if (scrollProgress > threshold) {
           const revealAlpha = Math.min(1, (scrollProgress - threshold) * 4);
-
-          // Check if hovered
           const isHovered = hoveredNode === key;
-          const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
 
-          // Large glow
-          const glowSize = isHovered ? 80 : 50;
+          const pulsePhase = time * 2 + i * 0.5;
+          const pulseScale = 1 + Math.sin(pulsePhase) * 0.15;
+
+          const glowSize = (isHovered ? 70 : 45) * pulseScale;
           const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowSize);
-          glow.addColorStop(0, `rgba(0, 255, 208, ${revealAlpha * (isHovered ? 0.6 : 0.4)})`);
-          glow.addColorStop(0.3, `rgba(77, 171, 255, ${revealAlpha * 0.2})`);
+          glow.addColorStop(0, `rgba(0, 255, 208, ${revealAlpha * (isHovered ? 0.5 : 0.35)})`);
+          glow.addColorStop(0.4, `rgba(77, 171, 255, ${revealAlpha * 0.15})`);
           glow.addColorStop(1, 'transparent');
 
           ctx.beginPath();
@@ -1286,19 +1482,69 @@
           ctx.fillStyle = glow;
           ctx.fill();
 
-          // Core
-          const coreSize = isHovered ? 10 : 7;
+          const ringSize = 20 + (Math.sin(pulsePhase) + 1) * 15;
+          const ringAlpha = (1 - (ringSize - 20) / 30) * 0.3 * revealAlpha;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, ringSize, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0, 255, 208, ${ringAlpha})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          const coreSize = isHovered ? 9 : 6;
           ctx.beginPath();
           ctx.arc(pos.x, pos.y, coreSize, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(0, 255, 208, ${revealAlpha})`;
           ctx.fill();
 
-          // Update label position
           const label = document.getElementById(`label-${key}`);
           if (label) {
-            label.style.left = `${pos.x + 20}px`;
-            label.style.top = `${pos.y - 10}px`;
+            label.style.left = `${pos.x + 18}px`;
+            label.style.top = `${pos.y - 8}px`;
             label.classList.toggle('visible', scrollProgress > threshold + 0.02);
+          }
+        }
+      });
+
+      classified.forEach((node, i) => {
+        const threshold = node.delay;
+
+        if (scrollProgress > threshold) {
+          const pos = getNodePosition(node.basePos);
+          const revealAlpha = Math.min(1, (scrollProgress - threshold) * 3);
+          const isHovered = hoveredNode === `classified-${i}`;
+
+          const pulsePhase = time * 1.5 + i * 1.2;
+          const pulseScale = 1 + Math.sin(pulsePhase) * 0.12;
+
+          const glowSize = (isHovered ? 55 : 35) * pulseScale;
+          const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowSize);
+          glow.addColorStop(0, `rgba(248, 113, 113, ${revealAlpha * (isHovered ? 0.5 : 0.35)})`);
+          glow.addColorStop(1, 'transparent');
+
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, glowSize, 0, Math.PI * 2);
+          ctx.fillStyle = glow;
+          ctx.fill();
+
+          const ringSize = 15 + (Math.sin(pulsePhase) + 1) * 12;
+          const ringAlpha = (1 - (ringSize - 15) / 24) * 0.25 * revealAlpha;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, ringSize, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(248, 113, 113, ${ringAlpha})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          const coreSize = isHovered ? 7 : 5;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, coreSize, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(248, 113, 113, ${revealAlpha * 0.9})`;
+          ctx.fill();
+
+          const label = document.getElementById(`label-classified-${i}`);
+          if (label) {
+            label.style.left = `${pos.x + 16}px`;
+            label.style.top = `${pos.y - 8}px`;
+            label.classList.toggle('visible', scrollProgress > threshold + 0.03);
           }
         }
       });
@@ -1306,19 +1552,23 @@
       time += 0.016;
     }
 
-    // Hit detection for nodes
     function getHoveredNode() {
-      const nodeKeys = Object.keys(products);
-      for (const key of nodeKeys) {
-        const pos = getNodePosition(key);
+      for (const key of Object.keys(products)) {
+        const pos = getNodePosition(products[key].basePos);
         const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
-        if (dist < 40) return key;
+        if (dist < 35) return key;
+      }
+      for (let i = 0; i < classified.length; i++) {
+        if (scrollProgress > classified[i].delay) {
+          const pos = getNodePosition(classified[i].basePos);
+          const dist = Math.hypot(mouseX - pos.x, mouseY - pos.y);
+          if (dist < 30) return `classified-${i}`;
+        }
       }
       return null;
     }
 
-    // Mouse handling
-    canvas.addEventListener('mousemove', (e) => {
+    function handleMouseMove(e) {
       mouseX = e.clientX;
       mouseY = e.clientY;
       const newHovered = getHoveredNode();
@@ -1326,15 +1576,32 @@
         hoveredNode = newHovered;
         canvas.style.cursor = hoveredNode ? 'pointer' : 'default';
       }
-    });
+    }
 
-    canvas.addEventListener('click', () => {
+    function handleClick() {
       if (hoveredNode) {
-        showDetail(hoveredNode);
+        if (hoveredNode.startsWith('classified')) {
+          showClassified();
+        } else {
+          showDetail(hoveredNode);
+        }
       }
-    });
+    }
 
-    // Detail panel
+    function handleTouch(e) {
+      const touch = e.changedTouches[0];
+      mouseX = touch.clientX;
+      mouseY = touch.clientY;
+      const tapped = getHoveredNode();
+      if (tapped) {
+        if (tapped.startsWith('classified')) {
+          showClassified();
+        } else {
+          showDetail(tapped);
+        }
+      }
+    }
+
     const detailPanel = document.getElementById('detailPanel');
     const detailContent = document.getElementById('detailContent');
     const detailClose = document.getElementById('detailClose');
@@ -1342,14 +1609,25 @@
 
     function showDetail(key) {
       const product = products[key];
-      const statusClass = product.status === 'live' ? 'status-live' :
-                         product.status === 'beta' ? 'status-beta' : 'status-internal';
 
       detailContent.innerHTML = `
-        <div class="detail-name">${product.name}<span class="detail-status ${statusClass}">${product.status}</span></div>
+        <div class="detail-name">${product.name}<span class="detail-status">LIVE</span></div>
         <div class="detail-type">${product.type}</div>
         <div class="detail-desc">${product.desc}</div>
         ${product.details}
+      `;
+
+      detailPanel.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function showClassified() {
+      detailContent.innerHTML = `
+        <div class="detail-classified">
+          <div class="icon">⬡</div>
+          <h3>CLASSIFIED</h3>
+          <p>This project operates under different constraints. Some work runs on longer timelines. Not everything surfaces.</p>
+        </div>
       `;
 
       detailPanel.classList.add('active');
@@ -1367,30 +1645,27 @@
       if (e.key === 'Escape') hideDetail();
     });
 
-    // Scroll handling
     function handleScroll() {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
       scrollProgress = window.scrollY / scrollHeight;
 
-      // Update progress
-      document.getElementById('progressFill').style.height = `${scrollProgress * 100}%`;
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      if (progressFill) progressFill.style.width = `${scrollProgress * 100}%`;
+      if (progressText) progressText.textContent = `${Math.round(scrollProgress * 100)}%`;
 
-      // Scroll hint
-      document.getElementById('scrollHint').classList.toggle('hidden', scrollProgress > 0.05);
+      const heroText = document.getElementById('heroText');
+      if (heroText) heroText.classList.toggle('hidden', scrollProgress > 0.08);
 
-      // Text panels
-      document.getElementById('panel-intro').classList.toggle('visible', scrollProgress < 0.15);
-      document.getElementById('panel-ladder').classList.toggle('visible', scrollProgress > 0.12 && scrollProgress < 0.35);
-      document.getElementById('panel-thesis').classList.toggle('visible', scrollProgress > 0.32 && scrollProgress < 0.55);
+      const scrollHint = document.getElementById('scrollHint');
+      if (scrollHint) scrollHint.classList.toggle('hidden', scrollProgress > 0.03);
     }
 
-    // Form handling
-    document.getElementById('rsvpSubmit').addEventListener('click', () => {
+    document.getElementById('rsvpSubmit')?.addEventListener('click', () => {
       const name = document.getElementById('rsvpName').value;
       const email = document.getElementById('rsvpEmail').value;
 
       if (name && email) {
-        // Add to attendees
         const attendees = document.getElementById('attendees');
         const initial = name.charAt(0).toUpperCase();
         const colors = ['#00ffd0', '#4dabff'];
@@ -1404,13 +1679,12 @@
 
         attendees.insertBefore(newAttendee, attendees.lastElementChild);
 
-        // Show success
         document.getElementById('rsvpForm').style.display = 'none';
         document.getElementById('rsvpSuccess').style.display = 'block';
       }
     });
 
-    document.getElementById('newsletterSubmit').addEventListener('click', () => {
+    document.getElementById('newsletterSubmit')?.addEventListener('click', () => {
       const email = document.getElementById('newsletterEmail').value;
       if (email) {
         document.getElementById('newsletterForm').style.display = 'none';
@@ -1418,19 +1692,10 @@
       }
     });
 
-    // Animation loop
     function animate() {
       drawSky();
       requestAnimationFrame(animate);
     }
-
-    // Init
-    window.addEventListener('resize', resize);
-    window.addEventListener('scroll', handleScroll);
-
-    resize();
-    animate();
-    handleScroll();
   </script>
 </body>
 </html>
